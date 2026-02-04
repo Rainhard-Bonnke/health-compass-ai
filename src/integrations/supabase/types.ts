@@ -53,6 +53,66 @@ export type Database = {
         }
         Relationships: []
       }
+      appointments: {
+        Row: {
+          appointment_date: string
+          created_at: string | null
+          department_id: string | null
+          doctor_id: string
+          end_time: string
+          id: string
+          notes: string | null
+          patient_id: string
+          reason: string | null
+          start_time: string
+          status: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_date: string
+          created_at?: string | null
+          department_id?: string | null
+          doctor_id: string
+          end_time: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          reason?: string | null
+          start_time: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_date?: string
+          created_at?: string | null
+          department_id?: string | null
+          doctor_id?: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          reason?: string | null
+          start_time?: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -187,6 +247,202 @@ export type Database = {
         }
         Relationships: []
       }
+      departments: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      doctor_schedules: {
+        Row: {
+          created_at: string | null
+          day_of_week: number
+          doctor_id: string
+          end_time: string
+          id: string
+          is_active: boolean | null
+          slot_duration_minutes: number | null
+          start_time: string
+        }
+        Insert: {
+          created_at?: string | null
+          day_of_week: number
+          doctor_id: string
+          end_time: string
+          id?: string
+          is_active?: boolean | null
+          slot_duration_minutes?: number | null
+          start_time: string
+        }
+        Update: {
+          created_at?: string | null
+          day_of_week?: number
+          doctor_id?: string
+          end_time?: string
+          id?: string
+          is_active?: boolean | null
+          slot_duration_minutes?: number | null
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_schedules_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_time_off: {
+        Row: {
+          created_at: string | null
+          doctor_id: string
+          end_datetime: string
+          id: string
+          reason: string | null
+          start_datetime: string
+        }
+        Insert: {
+          created_at?: string | null
+          doctor_id: string
+          end_datetime: string
+          id?: string
+          reason?: string | null
+          start_datetime: string
+        }
+        Update: {
+          created_at?: string | null
+          doctor_id?: string
+          end_datetime?: string
+          id?: string
+          reason?: string | null
+          start_datetime?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_time_off_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hospital_settings: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      lab_results: {
+        Row: {
+          created_at: string | null
+          file_url: string | null
+          id: string
+          notes: string | null
+          ordered_by: string
+          patient_id: string
+          result_data: Json | null
+          status: string | null
+          test_date: string
+          test_name: string
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          ordered_by: string
+          patient_id: string
+          result_data?: Json | null
+          status?: string | null
+          test_date: string
+          test_name: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          file_url?: string | null
+          id?: string
+          notes?: string | null
+          ordered_by?: string
+          patient_id?: string
+          result_data?: Json | null
+          status?: string | null
+          test_date?: string
+          test_name?: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_results_ordered_by_fkey"
+            columns: ["ordered_by"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_results_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           consultation_id: string | null
@@ -267,6 +523,98 @@ export type Database = {
         }
         Relationships: []
       }
+      prescription_items: {
+        Row: {
+          created_at: string | null
+          dosage: string
+          duration: string | null
+          frequency: string
+          id: string
+          instructions: string | null
+          medication_name: string
+          prescription_id: string
+          quantity: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          dosage: string
+          duration?: string | null
+          frequency: string
+          id?: string
+          instructions?: string | null
+          medication_name: string
+          prescription_id: string
+          quantity?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          dosage?: string
+          duration?: string | null
+          frequency?: string
+          id?: string
+          instructions?: string | null
+          medication_name?: string
+          prescription_id?: string
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_items_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          appointment_id: string | null
+          created_at: string | null
+          diagnosis: string | null
+          doctor_id: string
+          id: string
+          notes: string | null
+          patient_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string | null
+          diagnosis?: string | null
+          doctor_id: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string | null
+          diagnosis?: string | null
+          doctor_id?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -303,6 +651,53 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_profiles: {
+        Row: {
+          created_at: string | null
+          department_id: string | null
+          hire_date: string | null
+          id: string
+          is_active: boolean | null
+          license_number: string | null
+          specialization: string | null
+          staff_role: Database["public"]["Enums"]["staff_role"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          department_id?: string | null
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          license_number?: string | null
+          specialization?: string | null
+          staff_role: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          department_id?: string | null
+          hire_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          license_number?: string | null
+          specialization?: string | null
+          staff_role?: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_profiles_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -327,11 +722,75 @@ export type Database = {
         }
         Relationships: []
       }
+      walk_in_queue: {
+        Row: {
+          called_time: string | null
+          check_in_time: string | null
+          completed_time: string | null
+          created_at: string | null
+          department_id: string
+          doctor_id: string | null
+          estimated_wait_minutes: number | null
+          id: string
+          patient_id: string
+          queue_number: number
+          reason: string | null
+          status: Database["public"]["Enums"]["queue_status"] | null
+        }
+        Insert: {
+          called_time?: string | null
+          check_in_time?: string | null
+          completed_time?: string | null
+          created_at?: string | null
+          department_id: string
+          doctor_id?: string | null
+          estimated_wait_minutes?: number | null
+          id?: string
+          patient_id: string
+          queue_number: number
+          reason?: string | null
+          status?: Database["public"]["Enums"]["queue_status"] | null
+        }
+        Update: {
+          called_time?: string | null
+          check_in_time?: string | null
+          completed_time?: string | null
+          created_at?: string | null
+          department_id?: string
+          doctor_id?: string | null
+          estimated_wait_minutes?: number | null
+          id?: string
+          patient_id?: string
+          queue_number?: number
+          reason?: string | null
+          status?: Database["public"]["Enums"]["queue_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "walk_in_queue_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "walk_in_queue_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_next_queue_number: {
+        Args: { _department_id: string }
+        Returns: number
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -343,11 +802,27 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_staff_role: {
+        Args: {
+          _staff_role: Database["public"]["Enums"]["staff_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "provider" | "patient"
+      appointment_status:
+        | "scheduled"
+        | "checked_in"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+        | "no_show"
       confidence_level: "low" | "medium" | "high"
       consultation_status: "pending" | "in_review" | "completed" | "escalated"
+      queue_status: "waiting" | "called" | "serving" | "completed" | "cancelled"
+      staff_role: "doctor" | "nurse" | "receptionist" | "lab_technician"
       triage_level: "emergency" | "urgent" | "routine" | "self_care"
     }
     CompositeTypes: {
@@ -477,8 +952,18 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "provider", "patient"],
+      appointment_status: [
+        "scheduled",
+        "checked_in",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "no_show",
+      ],
       confidence_level: ["low", "medium", "high"],
       consultation_status: ["pending", "in_review", "completed", "escalated"],
+      queue_status: ["waiting", "called", "serving", "completed", "cancelled"],
+      staff_role: ["doctor", "nurse", "receptionist", "lab_technician"],
       triage_level: ["emergency", "urgent", "routine", "self_care"],
     },
   },
