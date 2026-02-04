@@ -4,8 +4,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ChatMessage } from '@/components/chat/ChatMessage';
 import { 
   Send, 
   AlertTriangle, 
@@ -16,7 +17,6 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -244,26 +244,11 @@ export default function SymptomChecker() {
           <ScrollArea className="flex-1 pr-4">
             <div className="space-y-4 pb-4" ref={scrollAreaRef}>
               {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] ${
-                      message.role === 'user'
-                        ? 'chat-bubble-user'
-                        : 'chat-bubble-assistant'
-                    }`}
-                  >
-                    {message.role === 'assistant' ? (
-                      <div className="prose prose-sm max-w-none dark:prose-invert">
-                        <ReactMarkdown>{message.content || '...'}</ReactMarkdown>
-                      </div>
-                    ) : (
-                      <p>{message.content}</p>
-                    )}
-                  </div>
-                </div>
+                <ChatMessage 
+                  key={index} 
+                  role={message.role} 
+                  content={message.content} 
+                />
               ))}
               {isLoading && messages[messages.length - 1]?.role === 'user' && (
                 <div className="flex justify-start">

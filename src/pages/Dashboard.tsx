@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useConsultations } from '@/hooks/useConsultations';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { 
   MessageSquare, 
   FileText, 
@@ -13,27 +15,29 @@ import {
   Clock,
   AlertCircle,
   CheckCircle,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
+import { format } from 'date-fns';
 
 export default function Dashboard() {
-  const { user, userRole, isLoading } = useAuth();
+  const { user, userRole, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { data: consultations, isLoading: consultationsLoading } = useConsultations();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       navigate('/auth');
     }
-    // Redirect providers and admins to their dashboards
-    if (!isLoading && userRole === 'provider') {
+    if (!authLoading && userRole === 'provider') {
       navigate('/provider');
     }
-    if (!isLoading && userRole === 'admin') {
+    if (!authLoading && userRole === 'admin') {
       navigate('/admin');
     }
-  }, [user, userRole, isLoading, navigate]);
+  }, [user, userRole, authLoading, navigate]);
 
-  if (isLoading) {
+  if (authLoading) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -55,40 +59,22 @@ export default function Dashboard() {
       icon: FileText,
       title: 'View History',
       description: 'Review past consultations and reports',
-      link: '/consultations',
+      link: '/dashboard',
       primary: false,
     },
     {
       icon: User,
       title: 'Medical Profile',
       description: 'Update your health information',
-      link: '/profile',
+      link: '/dashboard',
       primary: false,
     },
     {
       icon: Calendar,
       title: 'Messages',
       description: 'View messages from providers',
-      link: '/messages',
+      link: '/dashboard',
       primary: false,
-    },
-  ];
-
-  // Placeholder data - will be replaced with real data
-  const recentConsultations = [
-    {
-      id: '1',
-      date: '2024-01-15',
-      chiefComplaint: 'Headache and fatigue',
-      status: 'completed',
-      triageLevel: 'routine',
-    },
-    {
-      id: '2',
-      date: '2024-01-10',
-      chiefComplaint: 'Sore throat',
-      status: 'in_review',
-      triageLevel: 'self_care',
     },
   ];
 
@@ -98,24 +84,53 @@ export default function Dashboard() {
         return <CheckCircle className="h-4 w-4 text-success" />;
       case 'in_review':
         return <Clock className="h-4 w-4 text-warning" />;
+      case 'escalated':
+        return <AlertTriangle className="h-4 w-4 text-destructive" />;
       case 'pending':
-        return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
       default:
-        return null;
+        return <AlertCircle className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'Completed';
-      case 'in_review':
-        return 'Under Review';
-      case 'pending':
-        return 'Pending';
-      default:
-        return status;
-    }
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+      completed: 'default',
+      in_review: 'secondary',
+      escalated: 'destructive',
+      pending: 'outline',
+    };
+    const labels: Record<string, string> = {
+      completed: 'Completed',
+      in_review: 'Under Review',
+      escalated: 'Escalated',
+      pending: 'Pending',
+    };
+    return (
+      <Badge variant={variants[status] || 'outline'}>
+        {labels[status] || status}
+      </Badge>
+    );
+  };
+
+  const getTriageBadge = (level: string | null) => {
+    if (!level) return null;
+    const colors: Record<string, string> = {
+      emergency: 'bg-destructive text-destructive-foreground',
+      urgent: 'bg-warning text-warning-foreground',
+      routine: 'bg-primary text-primary-foreground',
+      self_care: 'bg-success text-success-foreground',
+    };
+    const labels: Record<string, string> = {
+      emergency: 'Emergency',
+      urgent: 'Urgent',
+      routine: 'Routine',
+      self_care: 'Self-Care',
+    };
+    return (
+      <span className={`text-xs px-2 py-0.5 rounded-full ${colors[level] || ''}`}>
+        {labels[level] || level}
+      </span>
+    );
   };
 
   return (
@@ -162,33 +177,35 @@ export default function Dashboard() {
               <CardTitle>Recent Consultations</CardTitle>
               <CardDescription>Your latest symptom checks and consultations</CardDescription>
             </div>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/consultations">View All</Link>
-            </Button>
           </CardHeader>
           <CardContent>
-            {recentConsultations.length > 0 ? (
+            {consultationsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : consultations && consultations.length > 0 ? (
               <div className="space-y-4">
-                {recentConsultations.map((consultation) => (
+                {consultations.map((consultation) => (
                   <div 
                     key={consultation.id}
-                    className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer"
-                    onClick={() => navigate(`/consultation/${consultation.id}`)}
+                    className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div className="flex-shrink-0">
                         {getStatusIcon(consultation.status)}
                       </div>
                       <div>
-                        <p className="font-medium">{consultation.chiefComplaint}</p>
-                        <p className="text-sm text-muted-foreground">{consultation.date}</p>
+                        <p className="font-medium">{consultation.chief_complaint}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-sm text-muted-foreground">
+                            {format(new Date(consultation.created_at), 'MMM d, yyyy')}
+                          </p>
+                          {getTriageBadge(consultation.triage_level)}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
-                        {getStatusText(consultation.status)}
-                      </span>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex items-center gap-3">
+                      {getStatusBadge(consultation.status)}
                     </div>
                   </div>
                 ))}
