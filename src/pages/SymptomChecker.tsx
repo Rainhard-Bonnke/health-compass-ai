@@ -241,8 +241,8 @@ export default function SymptomChecker() {
           </Card>
 
           {/* Messages */}
-          <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
-            <div className="space-y-4 pb-4">
+          <ScrollArea className="flex-1 pr-4">
+            <div className="space-y-4 pb-4" ref={scrollAreaRef}>
               {messages.map((message, index) => (
                 <div
                   key={index}
