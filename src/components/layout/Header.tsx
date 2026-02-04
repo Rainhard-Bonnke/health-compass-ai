@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { Activity, User, LogOut, Settings, MessageSquare, LayoutDashboard } from 'lucide-react';
+import { Activity, User, LogOut, Settings, MessageSquare, LayoutDashboard, Calendar, Stethoscope } from 'lucide-react';
 
 export function Header() {
   const { user, userRole, signOut } = useAuth();
@@ -41,15 +41,15 @@ export function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
+          <Link to="/booking" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Book Appointment
+          </Link>
           <Link to="/symptom-checker" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Symptom Checker
           </Link>
-          <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            About
-          </Link>
-          {userRole === 'provider' && (
-            <Link to="/provider" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Provider Dashboard
+          {(userRole === 'provider' || userRole === 'admin') && (
+            <Link to="/doctor" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Doctor Dashboard
             </Link>
           )}
           {userRole === 'admin' && (
@@ -78,14 +78,20 @@ export function Header() {
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/booking')}>
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Book Appointment
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/symptom-checker')}>
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Symptom Checker
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </DropdownMenuItem>
+                {(userRole === 'provider' || userRole === 'admin') && (
+                  <DropdownMenuItem onClick={() => navigate('/doctor')}>
+                    <Stethoscope className="mr-2 h-4 w-4" />
+                    Doctor Dashboard
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />

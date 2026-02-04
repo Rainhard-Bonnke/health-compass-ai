@@ -10,6 +10,8 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import SymptomChecker from "./pages/SymptomChecker";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import BookingPage from "./pages/BookingPage";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +27,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/booking" element={<BookingPage />} />
             <Route 
               path="/dashboard" 
               element={
@@ -39,6 +42,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['provider', 'admin']}>
                   <ProviderDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/doctor" 
+              element={
+                <ProtectedRoute allowedRoles={['provider', 'admin']}>
+                  <DoctorDashboard />
                 </ProtectedRoute>
               } 
             />
